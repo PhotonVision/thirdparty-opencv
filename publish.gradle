@@ -18,10 +18,10 @@ def pubVersion = "${project.ext.version}-2"
 def outputsFolder = file("$project.buildDir/outputs")
 
 def baseArtifactId = 'opencv'
-def artifactGroupId = 'edu.wpi.first.thirdparty.frc2024.opencv'
-def zipBaseName = '_GROUP_edu_wpi_first_thirdparty_frc2024_opencv_ID_opencv-cpp_CLS'
-def jniBaseName = "_GROUP_edu_wpi_first_thirdparty_frc2024_opencv_ID_opencv-jni_CLS"
-def javaBaseName = "_GROUP_edu_wpi_first_thirdparty_frc2024_opencv_ID_opencv-java_CLS"
+def artifactGroupId = 'org.photonvision.thirdparty.frc2024.opencv'
+def zipBaseName = '_GROUP_org_photonvision_thirdparty_frc2024_opencv_ID_opencv-cpp_CLS'
+def jniBaseName = "_GROUP_org_photonvision_thirdparty_frc2024_opencv_ID_opencv-jni_CLS"
+def javaBaseName = "_GROUP_org_photonvision_thirdparty_frc2024_opencv_ID_opencv-java_CLS"
 
 def versionFile = file("$outputsFolder/version.txt")
 
@@ -402,6 +402,18 @@ if (!project.hasProperty('jenkinsBuild')) {
     }
 }
 
+publishing {
+    repositories {
+        maven {
+            url ('https://maven.photonvision.org/repository/internal')
+            credentials {
+                username "ghactions"
+                password System.getenv("ARTIFACTORY_PUBLISH_PASSWORD")
+            }
+        }
+    }
+}
+
 model {
     publishing {
         publications {
@@ -433,11 +445,6 @@ model {
                 artifactId = "${baseArtifactId}-cpp"
                 groupId artifactGroupId
                 version pubVersion
-            }
-        }
-        repositories {
-            maven {
-                url "${System.getProperty('user.home')}/releases/maven/${project.repo}"
             }
         }
     }
