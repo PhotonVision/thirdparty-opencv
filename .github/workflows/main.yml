@@ -190,19 +190,17 @@ jobs:
       - name: Combine
         if: |
           !startsWith(github.ref, 'refs/tags/v')
-        run: ./gradlew publish -Pthirdparty
+        run: ./gradlew publish
         working-directory: combiner
       - name: Combine (Release)
         if: |
           github.repository_owner == 'PhotonVision' &&
           startsWith(github.ref, 'refs/tags/v')
         run: |
-          ./gradlew publish -Pthirdparty
+          ./gradlew publish
         working-directory: combiner
         env:
-          RUN_AZURE_ARTIFACTORY_RELEASE: 'TRUE'
-          ARTIFACTORY_PUBLISH_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
-          ARTIFACTORY_PUBLISH_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
+          PUBLISH_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
       - uses: actions/upload-artifact@v3
         with:
           name: Maven
