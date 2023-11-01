@@ -408,7 +408,7 @@ publishing {
             url ('https://maven.photonvision.org/repository/internal')
             credentials {
                 username "ghactions"
-                password System.getenv("PUBLISH_PASSWORD")
+                password System.getenv("MAVEN_PUBLISH_PASSWORD")
             }
         }
     }

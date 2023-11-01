@@ -53,8 +53,6 @@ jobs:
         run: |
           ./gradlew publish -Pthirdparty
         env:
-          MAVEN_PUBLISH_USERNAME: ghactions
-          MAVEN_PUBLISH_URL: 'https://maven.photonvision.org/repository/internal'
           MAVEN_PUBLISH_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
 
   build-windows:
@@ -112,8 +110,6 @@ jobs:
         run: |
           ./gradlew publish -Pthirdparty
         env:
-          MAVEN_PUBLISH_USERNAME: ghactions
-          MAVEN_PUBLISH_URL: 'https://maven.photonvision.org/repository/internal'
           MAVEN_PUBLISH_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
 
   build-mac:
@@ -140,8 +136,6 @@ jobs:
         run: |
           ./gradlew publish -Pthirdparty
         env:
-          MAVEN_PUBLISH_USERNAME: ghactions
-          MAVEN_PUBLISH_URL: 'https://maven.photonvision.org/repository/internal'
           MAVEN_PUBLISH_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
 
   build-mac-arm:
@@ -168,8 +162,6 @@ jobs:
         run: |
           ./gradlew publish -Pthirdparty
         env:
-          MAVEN_PUBLISH_USERNAME: ghactions
-          MAVEN_PUBLISH_URL: 'https://maven.photonvision.org/repository/internal'
           MAVEN_PUBLISH_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
 
   make_universal:
