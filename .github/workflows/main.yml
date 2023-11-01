@@ -46,6 +46,16 @@ jobs:
         with:
           name: ${{ matrix.artifact-name }}
           path: gradleDir/outputs/
+      - name: Upload to maven (if tagged)
+        if: |
+          github.repository_owner == 'PhotonVision' &&
+          startsWith(github.ref, 'refs/tags/v')
+        run: |
+          ./gradlew publish -Pthirdparty
+        env:
+          MAVEN_PUBLISH_USERNAME: ghactions
+          MAVEN_PUBLISH_URL: 'https://maven.photonvision.org/repository/internal'
+          MAVEN_PUBLISH_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
 
   build-windows:
     strategy:
@@ -95,6 +105,16 @@ jobs:
         with:
           name: ${{ matrix.artifact-name }}
           path: gradleDir/outputs/
+      - name: Upload to maven (if tagged)
+        if: |
+          github.repository_owner == 'PhotonVision' &&
+          startsWith(github.ref, 'refs/tags/v')
+        run: |
+          ./gradlew publish -Pthirdparty
+        env:
+          MAVEN_PUBLISH_USERNAME: ghactions
+          MAVEN_PUBLISH_URL: 'https://maven.photonvision.org/repository/internal'
+          MAVEN_PUBLISH_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
 
   build-mac:
     name: "Build - macOS"
@@ -113,6 +133,16 @@ jobs:
         with:
           name: macOS
           path: gradleDir/outputs/
+      - name: Upload to maven (if tagged)
+        if: |
+          github.repository_owner == 'PhotonVision' &&
+          startsWith(github.ref, 'refs/tags/v')
+        run: |
+          ./gradlew publish -Pthirdparty
+        env:
+          MAVEN_PUBLISH_USERNAME: ghactions
+          MAVEN_PUBLISH_URL: 'https://maven.photonvision.org/repository/internal'
+          MAVEN_PUBLISH_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
 
   build-mac-arm:
     name: "Build - macOS (Arm)"
@@ -131,6 +161,16 @@ jobs:
         with:
           name: macOSArm
           path: gradleDir/outputs/
+      - name: Upload to maven (if tagged)
+        if: |
+          github.repository_owner == 'PhotonVision' &&
+          startsWith(github.ref, 'refs/tags/v')
+        run: |
+          ./gradlew publish -Pthirdparty
+        env:
+          MAVEN_PUBLISH_USERNAME: ghactions
+          MAVEN_PUBLISH_URL: 'https://maven.photonvision.org/repository/internal'
+          MAVEN_PUBLISH_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
 
   make_universal:
     name: Make Universal
@@ -173,37 +213,3 @@ jobs:
         with:
           name: macOSUniversal
           path: build/toUpload/
-
-  combine:
-    name: Combine
-    needs: [build-docker, build-windows, make_universal]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          repository: photonvision/build-tools
-      - uses: actions/download-artifact@v3
-        with:
-          path: combiner/products/build/allOutputs
-      - name: Flatten Artifacts
-        run: rsync -a --delete combiner/products/build/allOutputs/*/* combiner/products/build/allOutputs/
-      - name: Combine
-        if: |
-          !startsWith(github.ref, 'refs/tags/v')
-        run: ./gradlew publish -Pthirdparty
-        working-directory: combiner
-      - name: Combine (Release)
-        if: |
-          github.repository_owner == 'PhotonVision' &&
-          startsWith(github.ref, 'refs/tags/v')
-        run: |
-          ./gradlew publish -Pthirdparty
-        working-directory: combiner
-        env:
-          MAVEN_PUBLISH_USERNAME: ghactions
-          MAVEN_PUBLISH_URL: 'https://maven.photonvision.org/repository/internal'
-          MAVEN_PUBLISH_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
-      - uses: actions/upload-artifact@v3
-        with:
-          name: Maven
-          path: ~/releases
