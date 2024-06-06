@@ -60,8 +60,8 @@ ext {
             '-DOPENCV_JAVA_SOURCE_VERSION=1.8',
             '-DOPENCV_JAVA_TARGET_VERSION=1.8',
             '-DWITH_MSMF_DXVA=OFF',
-            '-DCMAKE_INSTALL_RPATH=$ORIGIN',
-            '-DCMAKE_BUILD_WITH_INSTALL_RPATH=TRUE',
+            '-DCMAKE_SKIP_RPATH=FALSE',
+            '-DCMAKE_BUILD_RPATH_USE_ORIGIN=TRUE',
             '-DBUILD_opencv_apps=OFF',
             '-DBUILD_TESTS=OFF',
             '-DBUILD_PERF_TESTS=OFF',
@@ -183,8 +183,8 @@ def stripExe = 'strip'
 def objCopyExe = 'objcopy'
 
 if (project.platform == "linux-athena") {
-    stripExe = 'arm-frc2023-linux-gnueabi-strip'
-    objCopyExe = 'arm-frc2023-linux-gnueabi-objcopy'
+    stripExe = 'arm-frc2024-linux-gnueabi-strip'
+    objCopyExe = 'arm-frc2024-linux-gnueabi-objcopy'
 } else if (project.platform == "linux-arm32") {
     stripExe = 'armv6-bullseye-linux-gnueabihf-strip'
     objCopyExe = 'armv6-bullseye-linux-gnueabihf-objcopy'
@@ -210,6 +210,10 @@ if (project.platform == "linux-athena") {
             def args = defaultCmakeArgs
             if (buildType.contains("Shared")) {
                 args = args + '-DBUILD_SHARED_LIBS=ON' + '-DOPENCV_DEBUG_POSTFIX=d'
+
+                if (project.platform.contains('windows')) {
+                    args = args + '-DCMAKE_SHARED_LINKER_FLAGS=/DEPENDENTLOADFLAG:0x1100'
+                }
             } else {
                 args = args + '-DBUILD_SHARED_LIBS=OFF'
             }
@@ -247,9 +251,9 @@ if (project.platform == "linux-athena") {
                     '-DOPENCV_EXTRA_FLAGS_DEBUG=-Og' +
                     "-DCMAKE_MODULE_PATH=$rootDir/arm-frc-modules"
             } else if (project.platform == "osx-arm64") {
-                return args + "-DCMAKE_OSX_ARCHITECTURES=arm64" + "-DCMAKE_OSX_DEPLOYMENT_TARGET:String=11.0"
+                return args + "-DCMAKE_OSX_ARCHITECTURES=arm64" + "-DCMAKE_OSX_DEPLOYMENT_TARGET:String=13.0" + "-DCMAKE_BUILD_RPATH=@loader_path"
             } else if (project.platform == "osx-x86_64") {
-                return args + "-DCMAKE_OSX_ARCHITECTURES=x86_64" + "-DCMAKE_OSX_DEPLOYMENT_TARGET:String=10.15"
+                return args + "-DCMAKE_OSX_ARCHITECTURES=x86_64" + "-DCMAKE_OSX_DEPLOYMENT_TARGET:String=13.0" + "-DCMAKE_BUILD_RPATH=@loader_path"
             } else if (project.platform == "windows-arm64") {
                 return args + "-DOPENCV_SKIP_SYSTEM_PROCESSOR_DETECTION=TRUE" + "-DAARCH64=ON"
             }

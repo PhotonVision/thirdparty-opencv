@@ -12,7 +12,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - container: wpilib/roborio-cross-ubuntu:2023-22.04
+          - container: wpilib/roborio-cross-ubuntu:2024-22.04
             artifact-name: Athena
             build-options: "-Pplatform=linux-athena"
           - container: wpilib/raspbian-cross-ubuntu:bullseye-22.04
@@ -98,7 +98,7 @@ jobs:
 
   build-mac:
     name: "Build - macOS"
-    runs-on: macOS-11
+    runs-on: macOS-14
     steps:
       - uses: actions/checkout@v3
         with:
@@ -116,7 +116,7 @@ jobs:
 
   build-mac-arm:
     name: "Build - macOS (Arm)"
-    runs-on: macos-11
+    runs-on: macOS-14
     steps:
       - uses: actions/checkout@v3
         with:
