@@ -405,7 +405,7 @@ if (!project.hasProperty('jenkinsBuild')) {
 publishing {
     repositories {
         maven {
-            url ('https://maven.photonvision.org/repository/internal')
+            url ('https://maven.photonvision.org/releases')
             credentials {
                 username "ghactions"
                 password System.getenv("PUBLISH_PASSWORD")
