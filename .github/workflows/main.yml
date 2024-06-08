@@ -200,8 +200,8 @@ jobs:
           ./gradlew publish -Pthirdparty
         working-directory: combiner
         env:
+          MAVEN_PUBLISH_URL: 'https://maven.photonvision.org/releases'
           MAVEN_PUBLISH_USERNAME: ghactions
-          MAVEN_PUBLISH_URL: 'https://maven.photonvision.org/repository/internal'
           MAVEN_PUBLISH_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
       - uses: actions/upload-artifact@v3
         with:
