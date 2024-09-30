@@ -34,6 +34,9 @@ jobs:
           submodules: 'true'
       - run: sudo apt-get update && sudo apt-get install ant -y && sudo rm -rf /var/lib/apt/lists/* && sudo rm -f /bin/ant && sudo ln -s /usr/share/ant/bin/ant /bin/ant
         name: Install Ant
+      - run: sudo apt-get update && sudo apt-get install --quiet -y --no-install-recommends gstreamer1.0-gl gstreamer1.0-opencv gstreamer1.0-plugins-bad gstreamer1.0-plugins-good gstreamer1.0-plugins-ugly gstreamer1.0-tools libgstreamer-plugins-base1.0-dev libgstreamer1.0-0 libgstreamer1.0-dev 
+        name: Install gstreamer
+        if: matrix.artifact-name == 'Linux'
       - run: rm -rf /usr/local/arm-linux-gnueabihf && curl -SL https://github.com/wpilibsuite/opensdk/releases/download/v2023-9/armhf-raspi-bullseye-2023-x86_64-linux-gnu-Toolchain-10.2.0.tgz | sh -c 'mkdir -p /usr/local && cd /usr/local && tar xzf - --strip-components=2'
         name: Replace arm32 compiler
         if: matrix.artifact-name == 'Arm32'
@@ -178,28 +181,32 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          repository: wpilibsuite/build-tools
+          repository: photonvision/build-tools
       - uses: actions/download-artifact@v4
         with:
           path: combiner/products/build/allOutputs
       - name: Flatten Artifacts
         run: rsync -a --delete combiner/products/build/allOutputs/*/* combiner/products/build/allOutputs/
-      - name: Combine
+      - name: Combine (Snapshot)
         if: |
           !startsWith(github.ref, 'refs/tags/v')
-        run: ./gradlew publish -Pthirdparty
-        working-directory: combiner
-      - name: Combine (Release)
-        if: |
-          github.repository_owner == 'wpilibsuite' &&
-          startsWith(github.ref, 'refs/tags/v')
-        run: |
-          ./gradlew publish -Pthirdparty
+        run: ./gradlew publish -Pthirdparty -i
         working-directory: combiner
         env:
-          RUN_AZURE_ARTIFACTORY_RELEASE: 'TRUE'
-          ARTIFACTORY_PUBLISH_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
-          ARTIFACTORY_PUBLISH_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
+          MAVEN_PUBLISH_URL: 'https://maven.photonvision.org/snapshots'
+          MAVEN_PUBLISH_USERNAME: ghactions
+          MAVEN_PUBLISH_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
+      - name: Combine (Release)
+        if: |
+          github.repository_owner == 'PhotonVision' &&
+          startsWith(github.ref, 'refs/tags/v')
+        run: |
+          ./gradlew publish -Pthirdparty -i
+        working-directory: combiner
+        env:
+          MAVEN_PUBLISH_URL: 'https://maven.photonvision.org/releases'
+          MAVEN_PUBLISH_USERNAME: ghactions
+          MAVEN_PUBLISH_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
       - uses: actions/upload-artifact@v4
         with:
           name: Maven
